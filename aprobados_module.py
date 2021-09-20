@@ -40,7 +40,7 @@ def main():
                 print(aprobado_name)
                 if match_string_percentage(final["especialidad"][k], aprobados_especialidad[i]) > 0.75:
                     print(Fore.CYAN + f"{aprobado_name} ha sido " + Fore.YELLOW + "ENCONTRADO." + aprobados_nota[i])
-                    final["nota_consiguen_plaza"][k] = aprobados_nota[i]
+                    final["nota_consiguen_plaza"][k] = aprobados_nota[i].replace(",", ".")
 
                     aprobados_names.pop(i)
                     aprobados_especialidad.pop(i)
@@ -50,7 +50,7 @@ def main():
             print(len(aprobados_names))
             len_left = len(aprobados_names)
     print(aprobados_names)
-    final.to_excel("final_2.xlsx")
+    final.to_excel("final_2.xlsx", index=False)
 
 if __name__ == "__main__":
     main()
