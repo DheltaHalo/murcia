@@ -114,7 +114,7 @@ class Person_builder(object):
         self.line = line
         self.info = info
         self.separator = " - "
-
+        
         self.build_dni()
         self.build_name()
         self.build_numbers()
@@ -124,21 +124,16 @@ class Person_builder(object):
         self.line = self.line[len(self.dni) + len(self.separator):]
     
     def build_name(self):
-        match = re.compile(r"[a-zA-Z]\d|[a-zA-Z][-]\d|[a-zA-Z][-][-]|" +
-                           r"[,]\d|[,][-]\d|[,][-][-]|" +
-                           r"[a-zA-Z][.]\d|[a-zA-Z][.][-]|" 
-                           r"[a-zA-Z][ª]\d|[a-zA-Z][ª][-]").findall(self.line)[0]
-
-        index = self.line.find(match)
-        if "." in match:
-            index += 1
-        self.name = self.line[:index + 1]
-        self.line = self.line[index + 1:]
-
-        self.name = self.dni + " - " + self.name
+        print(self.line)
+        match = re.search(r"(.*)[a-zA-Zª][.,]?", self.line).group(0)
+        self.name = self.dni + " - " + match
+        self.line = self.line[len(match):]
 
     def build_numbers(self):
         self.line = self.line.replace(",", ".")
+        print(self.name)
+        print(self.line)
+
         # We remove the third mark which bugs when reading this kind of PDF
         if func.element_count(self.line, "-") + func.element_count(self.line, ".") > 2:
             error_index = len(self.line) - self.line[::-1].find(".") - 2
@@ -238,40 +233,38 @@ def create_marks_frame():
 
     # Variables
     people_list = []
-    file_list = func.create_dir_tree("PRIMERA FASE FUSIONADOS")
+    file_list = ["test3.pdf"]#func.create_dir_tree(input("Nombre carpeta PDF's: "))
 
     for files in file_list:
-        try:
-            # We read and store important info from our PDF
-            file = open(files, "rb")
-            pdfReader = PyPDF2.PdfFileReader(file)
-            n_pages = pdfReader.numPages
-            name_file = files.split(os.path.dirname(files))[1][1:]
 
-            for page in range(n_pages):
-                # We start reading pages and extracting the text
-                page_read = pdfReader.getPage(page)
-                text = page_read.extractText()
+        # We read and store important info from our PDF
+        file = open(files, "rb")
+        pdfReader = PyPDF2.PdfFileReader(file)
+        n_pages = pdfReader.numPages
 
-                # We build the people list
-                page = Line_builder(text)
-                if page.header == None:
-                    pass
+        for page in range(1):
+            # We start reading pages and extracting the text
+            page_read = pdfReader.getPage(page)
+            text = page_read.extractText()
 
-                else:
-                    # We build the academic info
-                    opos_info = Academic_Info(page.header)
+            # We build the people list
+            page = Line_builder(text)
+            if page.header == None:
+                pass
 
-                    for individual in page.people_list:
-                        person = Person_builder(individual, opos_info).create_person()
-                        people_list.append(person)
+            else:
+                # We build the academic info
+                opos_info = Academic_Info(page.header)
 
-            # We close the file
-            file.close()
+                for individual in page.people_list:
+                    person = Person_builder(individual, opos_info).create_person()
+                    people_list.append(person)
 
-            print(Fore.GREEN + "COMPLETED: " + Fore.YELLOW + name_file)
-        except:
-            print(Fore.RED + "ERROR: " + Fore.YELLOW + name_file)
+        # We close the file
+        file.close()
+
+        print(Fore.GREEN + "COMPLETED: " + Fore.YELLOW)
+
 
     try:
         print(Fore.CYAN + "Frame created successfully.")
@@ -292,7 +285,7 @@ def create_marks_frame():
 def main():
     frame = create_marks_frame()
     df = pd.DataFrame(frame)
-    df.to_excel("marks.xlsx", index = False)
+    df.to_excel("test.xlsx", index = False)
 
 if __name__ == "__main__":
     main()

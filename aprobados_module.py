@@ -12,7 +12,7 @@ init(autoreset=True)
 
 import PyPDF2
 def create_aprobados_frame():
-    file = open("aprobados.pdf", "rb")
+    file = open(input("Nombre del archivo de los aprobados: "), "rb")
     pdfReader = PyPDF2.PdfFileReader(file)
     n_pages = pdfReader.numPages
 

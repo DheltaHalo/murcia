@@ -24,18 +24,17 @@ def main():
         for i, y_name in enumerate(years["nombre"]):
             cond = True
             if match_string_percentage(m_name, y_name) > 0.85:
-                print(f"\nMarks name and especialidad: {m_name} " + Fore.YELLOW + marks["especialidad"][k])
-                print(f"Trying to match: {y_name}" + Fore.YELLOW + years["especialidad"][i])
-
-                if match_string_percentage(marks["especialidad"][k], years["especialidad"][i]) > 0.75:
-                    print(Fore.GREEN + "\nMatch")
-                    for key in diff_keys:
-                        marks[key][k] = str(years[key][i])
-                    
-                    cond = False
-                    break
+                print(Fore.GREEN + "Match")
+                print(m_name, y_name)
+                print()
+                for key in diff_keys:
+                    marks[key][k] = str(years[key][i])
+                
+                cond = False
+                break
+     
         if cond:
-            print(Fore.RED + "\nNo Match")
+            print(Fore.RED + "No Match")
         
     marks.to_excel("final.xlsx")
 
